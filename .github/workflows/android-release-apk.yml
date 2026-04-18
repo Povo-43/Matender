@@ -1,14 +1,22 @@
-name: Build Android APK on Release
+name: Manual Build and Auto Release
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release Version (e.g. v1.0.2)'
+        required: true
+        default: 'v1.0.0'
+      release_note:
+        description: 'Release Notes'
+        required: false
+        default: 'Manual build by GitHub Actions'
 
 permissions:
   contents: write
 
 jobs:
-  build-apk:
+  build-and-release:
     runs-on: ubuntu-latest
 
     steps:
@@ -53,13 +61,15 @@ jobs:
             -Pandroid.injected.signing.key.alias="$ANDROID_KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$ANDROID_KEY_PASSWORD"
 
-      - name: Upload APK artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: app-release-apk
-          path: android/app/build/outputs/apk/release/app-release.apk
-
-      - name: Attach APK to GitHub Release
+      # ここでリリースを作成し、APKをアップロードする
+      - name: Create Release and Upload APK
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: Release ${{ github.event.inputs.version }}
+          body: ${{ github.event.inputs.release_note }}
+          draft: false
+          prerelease: false
           files: android/app/build/outputs/apk/release/app-release.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
