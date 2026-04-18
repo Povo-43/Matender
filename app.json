@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Matender",
+    "slug": "matender",
+    "version": "0.2.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "assetBundlePatterns": ["**/*"],
+    "android": {
+      "package": "com.matender.app"
+    }
+  }
+}
