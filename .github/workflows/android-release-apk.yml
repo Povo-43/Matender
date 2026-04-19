@@ -55,6 +55,7 @@ jobs:
         run: |
           chmod +x ./gradlew
           ./gradlew :app:assembleRelease \
+            -PkotlinVersion=1.9.25 \
             -Pandroid.injected.signing.store.file="$GITHUB_WORKSPACE/android/app/release.keystore" \
             -Pandroid.injected.signing.store.password="$ANDROID_KEYSTORE_PASSWORD" \
             -Pandroid.injected.signing.key.alias="$ANDROID_KEY_ALIAS" \
