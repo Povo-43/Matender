@@ -13,6 +13,9 @@
     },
     "plugins": [
       "expo-asset"
-    ]
+    ],
+    "ios": {
+      "bundleIdentifier": "com.matender.app"
+    }
   }
 }
