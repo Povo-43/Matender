@@ -20,6 +20,12 @@ function assertOptionalString(value, fieldName) {
   }
 }
 
+function assertOptionalNumber(value, fieldName) {
+  if (value != null && (!Number.isFinite(value) || value < 0)) {
+    throw new Error(`${fieldName} must be a non-negative number when provided.`);
+  }
+}
+
 function assertIsoDate(value, fieldName) {
   assertString(value, fieldName);
   if (!isValidDateString(value)) {
@@ -63,6 +69,21 @@ export function createParentEvent(input) {
   }
 
   assertOptionalString(input.description, 'description');
+  assertOptionalString(input.calendarId, 'calendarId');
+  assertOptionalString(input.location, 'location');
+  assertOptionalString(input.eventColor, 'eventColor');
+  assertOptionalString(input.recurrence, 'recurrence');
+  assertOptionalString(input.recurrenceUnit, 'recurrenceUnit');
+  assertOptionalNumber(input.reminderMinutes, 'reminderMinutes');
+  assertOptionalNumber(input.recurrenceInterval, 'recurrenceInterval');
+
+  if (input.recurrence != null && !['none', 'daily', 'weekly', 'monthly', 'custom'].includes(input.recurrence)) {
+    throw new Error('recurrence must be one of: none, daily, weekly, monthly, custom.');
+  }
+
+  if (input.recurrenceUnit != null && !['day', 'week', 'month'].includes(input.recurrenceUnit)) {
+    throw new Error('recurrenceUnit must be one of: day, week, month.');
+  }
 
   return {
     id: input.id,
@@ -70,6 +91,13 @@ export function createParentEvent(input) {
     description: input.description,
     date: input.date,
     time: input.time,
+    calendarId: input.calendarId,
+    location: input.location,
+    eventColor: input.eventColor,
+    recurrence: input.recurrence ?? 'none',
+    recurrenceInterval: input.recurrenceInterval ?? 1,
+    recurrenceUnit: input.recurrenceUnit ?? 'day',
+    reminderMinutes: input.reminderMinutes,
     ...metadata
   };
 }

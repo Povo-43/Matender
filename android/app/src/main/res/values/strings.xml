@@ -1,3 +1,6 @@
 <resources>
   <string name="app_name">Matender</string>
+  <string name="widget_name">Matender Widget</string>
+  <string name="widget_title">今日のMatender</string>
+  <string name="widget_hint">タップしてMatenderを開く</string>
 </resources>
