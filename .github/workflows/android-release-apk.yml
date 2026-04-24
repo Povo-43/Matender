@@ -45,6 +45,11 @@ jobs:
 
       - name: Run tests
         run: npm test
+        
+      - name: Clean Android build
+        # 以前のビルド残骸を確実に消す
+        run: |
+          rm -rf android
 
       - name: Generate Android project (Expo prebuild)
         run: npx expo prebuild --platform android --non-interactive --clean --no-install
