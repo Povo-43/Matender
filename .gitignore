@@ -1,1 +1,41 @@
 node_modules
+# --- Expo / React Native ---
+node_modules/
+.expo/
+dist/
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# --- Native Build Artifacts ---
+# Prebuild (npx expo run:ios / android) を使用する場合に生成されるディレクトリ
+ios
+android
+
+# --- Environment Variables ---
+# セキュリティのため、環境変数は絶対にコミットしないでください
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# --- TypeScript ---
+*.tsbuildinfo
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+*.swp
+
+# --- Testing ---
+coverage/
+
+# --- IDE / Editors ---
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
