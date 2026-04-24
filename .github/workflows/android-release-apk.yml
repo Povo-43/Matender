@@ -18,6 +18,8 @@ permissions:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
+    env:
+      CI: true
 
     steps:
       - name: Checkout
@@ -26,7 +28,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Expo/React Native tends to be most stable on active LTS.
+          node-version: 20
 
       - name: Setup Java
         uses: actions/setup-java@v4
@@ -34,11 +37,17 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install dependencies (clean)
+        run: npm ci
+
+      - name: Validate project (expo-doctor)
+        run: npx expo-doctor
+
+      - name: Run tests
+        run: npm test
 
       - name: Generate Android project (Expo prebuild)
-        run: npx expo prebuild --platform android --non-interactive
+        run: npx expo prebuild --platform android --non-interactive --clean --no-install
 
       - name: Decode Android keystore
         env:
@@ -60,7 +69,7 @@ jobs:
             -Pandroid.injected.signing.key.alias="$ANDROID_KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$ANDROID_KEY_PASSWORD"
 
-      # ここでリリースを作成し、APKをアップロードする
+      # Create a GitHub Release and upload the APK.
       - name: Create Release and Upload APK
         uses: softprops/action-gh-release@v2
         with:
