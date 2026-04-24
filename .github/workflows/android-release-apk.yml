@@ -38,7 +38,7 @@ jobs:
           java-version: '17'
 
       - name: Install dependencies (clean)
-        run: npm ci
+        run: npm install
 
       - name: Validate project (expo-doctor)
         run: npx expo-doctor
