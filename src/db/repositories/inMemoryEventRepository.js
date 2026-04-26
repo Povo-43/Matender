@@ -72,6 +72,27 @@ export class InMemoryEventRepository {
       }));
   }
 
+  searchEventsByDate(date, keyword = '') {
+    const normalizedKeyword = keyword.trim().toLowerCase();
+    const events = this.listEventsByDate(date);
+
+    if (!normalizedKeyword) {
+      return events;
+    }
+
+    return events.filter((event) => {
+      const children = this.childrenByParent.get(event.id) ?? [];
+      const textTargets = [
+        event.title,
+        event.description,
+        ...children.map((child) => child.content),
+        ...children.map((child) => child.fileName)
+      ];
+
+      return textTargets.some((value) => String(value ?? '').toLowerCase().includes(normalizedKeyword));
+    });
+  }
+
   deleteEvent(eventId) {
     const deleted = this.events.delete(eventId);
     this.childrenByParent.delete(eventId);

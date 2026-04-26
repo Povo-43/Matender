@@ -112,6 +112,7 @@ export default function App() {
 
   const [selectedDate, setSelectedDate] = useState(toDateString(new Date()));
   const [monthCursor, setMonthCursor] = useState(startOfMonth(new Date()));
+  const [searchText, setSearchText] = useState('');
 
   const [eventModal, setEventModal] = useState({ visible: false, eventId: null });
   const [jsonModalVisible, setJsonModalVisible] = useState(false);
@@ -142,7 +143,14 @@ export default function App() {
     setRevision((v) => v + 1);
   };
 
-  const events = useMemo(() => repository.listEventsByDate(selectedDate), [repository, selectedDate, revision]);
+  const events = useMemo(
+    () => repository.searchEventsByDate(selectedDate, searchText),
+    [repository, selectedDate, searchText, revision]
+  );
+  const totalEventsForDay = useMemo(
+    () => repository.listEventsByDate(selectedDate).length,
+    [repository, selectedDate, revision]
+  );
   const cells = useMemo(() => calendarCells(monthCursor), [monthCursor]);
 
   const openCreate = () => {
@@ -300,10 +308,19 @@ export default function App() {
         <View style={styles.card}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{selectedDate} の予定</Text>
-            <Text style={styles.sectionSub}>{events.length}件</Text>
+            <Text style={styles.sectionSub}>
+              {searchText.trim() ? `${events.length}件（全${totalEventsForDay}件）` : `${events.length}件`}
+            </Text>
           </View>
+          <TextInput
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder="タイトル・メモを検索"
+            placeholderTextColor="#A0ABC3"
+            style={[styles.input, styles.searchInput]}
+          />
 
-          {!events.length && <Text style={styles.empty}>予定がありません</Text>}
+          {!events.length && <Text style={styles.empty}>該当する予定がありません</Text>}
 
           {events.map((event) => {
             const bundle = repository.getBundleByEventId(event.id);
@@ -556,6 +573,7 @@ const styles = StyleSheet.create({
   sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 },
   sectionTitle: { fontSize: 16, fontWeight: '700', color: '#1F2C49' },
   sectionSub: { color: '#6A789B', marginBottom: 8 },
+  searchInput: { marginBottom: 10 },
   empty: { textAlign: 'center', color: '#6A789B', paddingVertical: 16 },
 
   eventCard: { borderWidth: 1, borderColor: '#DDE6F7', borderRadius: 12, padding: 12, marginBottom: 8, backgroundColor: '#F8FAFF' },
