@@ -119,6 +119,58 @@ test('repository lists events by date and time order', () => {
   assert.deepEqual(events.map((event) => event.id), ['evt-early', 'evt-late']);
 });
 
+test('repository searchEventsByDate matches title and child memo content', () => {
+  const repository = new InMemoryEventRepository();
+
+  repository.upsertBundle({
+    event: {
+      id: 'evt-plan',
+      title: '週次ミーティング',
+      description: '進捗共有',
+      date: '2026-04-25',
+      time: '10:00',
+      createdAt: '2026-04-22T09:00:00.000Z',
+      updatedAt: '2026-04-22T09:00:00.000Z'
+    },
+    children: [
+      {
+        id: 'c-note',
+        parentId: 'evt-plan',
+        type: 'memo',
+        content: '議事メモ: API仕様を確認',
+        sortOrder: 0,
+        createdAt: '2026-04-22T09:00:00.000Z',
+        updatedAt: '2026-04-22T09:00:00.000Z'
+      }
+    ]
+  });
+
+  repository.upsertBundle({
+    event: {
+      id: 'evt-other',
+      title: '買い物',
+      date: '2026-04-25',
+      time: '18:00',
+      createdAt: '2026-04-22T09:01:00.000Z',
+      updatedAt: '2026-04-22T09:01:00.000Z'
+    },
+    children: []
+  });
+
+  assert.deepEqual(
+    repository.searchEventsByDate('2026-04-25', 'ミーティング').map((event) => event.id),
+    ['evt-plan']
+  );
+  assert.deepEqual(
+    repository.searchEventsByDate('2026-04-25', 'api仕様').map((event) => event.id),
+    ['evt-plan']
+  );
+  assert.deepEqual(
+    repository.searchEventsByDate('2026-04-25', '').map((event) => event.id),
+    ['evt-plan', 'evt-other']
+  );
+});
+
 
 
 test('repository exposes listAllBundles ordered by schedule', () => {
